@@ -16,7 +16,7 @@ services:
       - USER_EMAIL=${USER_EMAIL:-user@example.com}
       - DESCRIPTION=${DESCRIPTION:-Basic Information Display}
     volumes:
-      - app_data_${USER_ID:-1}:/app/data
+      - app_data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
@@ -41,5 +41,5 @@ services:
       - HTTPS_PORT=${HTTPS_PORT:-6444}
 
 volumes:
-  app_data_${USER_ID:-1}:
+  app_data:
     driver: local
