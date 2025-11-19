@@ -1,0 +1,22 @@
+<svg width="480" height="360" viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chambre froide professionnelle">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e3f8ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" rx="24" fill="url(#bg)"/>
+  <rect x="70" y="70" width="260" height="210" rx="18" fill="#ffffff" stroke="#cbd2e1" stroke-width="3"/>
+  <rect x="95" y="92" width="140" height="166" rx="10" fill="#f5f7fa" stroke="#d8e2ec" stroke-width="2"/>
+  <rect x="250" y="92" width="56" height="166" rx="8" fill="#edf2ff" stroke="#cbd2e1" stroke-width="2"/>
+  <circle cx="270" cy="175" r="10" fill="#0b7285"/>
+  <path d="M270 166v18" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M105 108h60v6h-60zM105 130h80v6h-80zM105 152h55v6h-55zM105 174h80v6h-80zM105 196h60v6h-60zM105 218h72v6h-72z" fill="#cbd2e1"/>
+  <rect x="350" y="110" width="70" height="120" rx="18" fill="#0b7285"/>
+  <circle cx="385" cy="155" r="22" fill="#ffffff" opacity="0.96"/>
+  <path d="M385 138v12l8 8" stroke="#0b7285" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M70 300h340" stroke="#cbd2e1" stroke-width="4" stroke-linecap="round"/>
+  <text x="240" y="54" text-anchor="middle" fill="#102a43" font-size="18" font-family="system-ui, sans-serif">
+    Chambre froide & contrôle de température
+  </text>
+</svg>

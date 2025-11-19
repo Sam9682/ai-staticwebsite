@@ -1,62 +1,222 @@
-{% extends "base.html" %}
-
-{% block title %}User Information - AI-StaticWebsite{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="info-card">
-        <h2>User Information</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <label>User ID:</label>
-                <span>{{ user.id }}</span>
-            </div>
-            <div class="info-item">
-                <label>Name:</label>
-                <span>{{ user.name }}</span>
-            </div>
-            <div class="info-item">
-                <label>Email:</label>
-                <span>{{ user.email }}</span>
-            </div>
-            <div class="info-item">
-                <label>Description:</label>
-                <span>{{ user.description }}</span>
-            </div>
-            <div class="info-item">
-                <label>Port:</label>
-                <span>{{ user.port }}</span>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MON FRIGO - Froid commercial & climatisation à Montpellier</title>
+    <meta name="description" content="MON FRIGO, spécialiste du froid commercial, chambres froides et climatisation à Montpellier. Dépannage 7j/7, installation et maintenance.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="container header-flex">
+        <div class="logo-wrap">
+            <img src="assets/logo-mon-frigo.svg" alt="Logo MON FRIGO" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">MON FRIGO</span>
+                <span class="logo-subtitle">Froid & Climatisation</span>
             </div>
         </div>
+        <div class="header-contact">
+            <a href="tel:0543454321" class="phone-link">📞 05 43 45 43 21</a>
+            <span class="header-address">2 rue des Esteves, 34000 Montpellier</span>
+        </div>
     </div>
-    
-    <div class="api-info">
-        <h3>API Endpoint</h3>
-        <p>Get user information via API: <a href="/api/info" target="_blank">/api/info</a></p>
-    </div>
-    
-    {% if show_admin %}
-    <div class="admin-panel">
-        <h2>Website Administration</h2>
-        <p>Upload new website version</p>
-        
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-content">
-                    <div class="upload-icon">📁</div>
-                    <p>Drag & drop your ZIP file here or click to browse</p>
-                    <input type="file" id="website" name="website" accept=".zip" required>
-                    <button type="button" id="browseBtn" class="browse-btn">Browse Files</button>
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="#accueil">Accueil</a>
+            <a href="#services">Services</a>
+            <a href="#depannage">Dépannage 7j/7</a>
+            <a href="#zones">Zones d'intervention</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section id="accueil" class="hero">
+        <div class="container hero-grid">
+            <div class="hero-text">
+                <h1>Spécialiste du froid commercial à Montpellier</h1>
+                <p>
+                    MON FRIGO accompagne les professionnels de la restauration, des métiers de bouche et du tertiaire
+                    pour l'installation, la maintenance et le dépannage de toutes vos installations frigorifiques
+                    et de climatisation.
+                </p>
+                <ul class="hero-list">
+                    <li>Installation de chambres froides, vitrines réfrigérées, meubles froids…</li>
+                    <li>Climatisation réversible pour commerces, bureaux et habitations</li>
+                    <li>Dépannage rapide 7j/7 sur Montpellier et alentours</li>
+                </ul>
+                <div class="hero-cta">
+                    <a href="tel:0543454321" class="btn btn-primary">Appeler maintenant</a>
+                    <a href="#contact" class="btn btn-secondary">Demander un devis</a>
+                </div>
+                <p class="hero-siret">Entreprise frigoriste - Intervention rapide - Conseils personnalisés</p>
+            </div>
+            <div class="hero-image-wrap">
+                <img src="assets/hero-chambre-froide.svg" alt="Chambre froide professionnelle" class="hero-image">
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="section">
+        <div class="container">
+            <h2>Nos services</h2>
+            <p class="section-intro">
+                De l'étude de votre projet à la mise en service, MON FRIGO vous accompagne sur l'ensemble de vos besoins
+                en froid commercial et climatisation.
+            </p>
+            <div class="cards-grid">
+                <article class="card">
+                    <img src="assets/service-froid.svg" alt="Installation froid commercial" class="card-icon">
+                    <h3>Froid commercial</h3>
+                    <ul>
+                        <li>Chambres froides positives et négatives</li>
+                        <li>Vitrines et comptoirs réfrigérés</li>
+                        <li>Armoires et meubles frigorifiques</li>
+                        <li>Cellules de refroidissement rapide</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <img src="assets/service-clim.svg" alt="Climatisation" class="card-icon">
+                    <h3>Climatisation</h3>
+                    <ul>
+                        <li>Climatisation réversible mono et multi-split</li>
+                        <li>Gainables pour commerces et bureaux</li>
+                        <li>Solutions pour habitats individuels</li>
+                        <li>Entretien et nettoyage des unités</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <img src="assets/service-maintenance.svg" alt="Maintenance et contrat" class="card-icon">
+                    <h3>Maintenance & contrats</h3>
+                    <ul>
+                        <li>Contrats de maintenance préventive</li>
+                        <li>Contrôle d'étanchéité des installations</li>
+                        <li>Réglage et optimisation énergétique</li>
+                        <li>Suivi personnalisé de votre parc machines</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="depannage" class="section section-alt">
+        <div class="container depannage-grid">
+            <div>
+                <h2>Dépannage frigorifique 7j/7</h2>
+                <p>
+                    Une panne de froid peut mettre en péril votre activité. MON FRIGO intervient rapidement pour
+                    remettre vos installations en service dans les meilleurs délais.
+                </p>
+                <ul class="checklist">
+                    <li>Hotline directe pour les clients sous contrat</li>
+                    <li>Diagnostic sur place et réparation dans les meilleurs délais</li>
+                    <li>Remplacement des pièces défectueuses</li>
+                    <li>Rapport d'intervention détaillé</li>
+                </ul>
+                <p class="highlight">
+                    <strong>Urgence froid ?</strong> Appelez dès maintenant le <a href="tel:0543454321">05 43 45 43 21</a>.
+                </p>
+            </div>
+            <div class="depannage-image-wrap">
+                <img src="assets/depannage-camion.svg" alt="Dépannage frigoriste" class="depannage-image">
+            </div>
+        </div>
+    </section>
+
+    <section id="zones" class="section">
+        <div class="container">
+            <h2>Zones d'intervention</h2>
+            <p class="section-intro">
+                Basés à Montpellier, nous intervenons sur l'ensemble de la métropole et les communes voisines.
+            </p>
+            <div class="zones-grid">
+                <div>
+                    <h3>Montpellier et métropole</h3>
+                    <ul class="zones-list">
+                        <li>Centre-ville, Ecusson</li>
+                        <li>Port Marianne, Antigone</li>
+                        <li>Millénaire, Garosud, Près d'Arènes</li>
+                        <li>Castelnau-le-Lez, Lattes, Pérols</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Professionnels & particuliers</h3>
+                    <ul class="zones-list">
+                        <li>Restaurants, bars, brasseries</li>
+                        <li>Boulangeries, boucheries, traiteurs</li>
+                        <li>Magasins alimentaires & GMS</li>
+                        <li>Bureaux, cabinets médicaux, habitats</li>
+                    </ul>
                 </div>
             </div>
-            <div class="selected-file" id="selectedFile" style="display: none;">
-                <span id="fileName"></span>
-                <button type="button" id="uploadBtn" class="upload-btn">Upload Website</button>
-                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
-            </div>
-            <div id="uploadStatus"></div>
         </div>
+    </section>
+
+    <section id="contact" class="section section-alt">
+        <div class="container contact-grid">
+            <div>
+                <h2>Contact & devis</h2>
+                <p>
+                    Vous avez un projet d'installation, besoin d'un dépannage ou d'un simple conseil ?
+                    Contactez MON FRIGO par téléphone ou via le formulaire ci-dessous.
+                </p>
+                <div class="contact-block">
+                    <p><strong>MON FRIGO</strong><br>
+                       2 rue des Esteves<br>
+                       34000 Montpellier
+                    </p>
+                    <p>
+                        Téléphone : <a href="tel:0543454321">05 43 45 43 21</a><br>
+                        Email : <a href="mailto:contact@mon-frigo.fr">contact@mon-frigo.fr</a>
+                    </p>
+                </div>
+            </div>
+            <form class="contact-form" onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom*</label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="entreprise">Entreprise</label>
+                        <input type="text" id="entreprise" name="entreprise">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email*</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <input type="tel" id="telephone" name="telephone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sujet">Sujet</label>
+                    <input type="text" id="sujet" name="sujet">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message*</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Envoyer ma demande</button>
+                <p class="form-info">*Champs obligatoires. Ce formulaire est un exemple statique (aucun envoi réel).</p>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-flex">
+        <p>© <span id="year"></span> MON FRIGO - Frigoriste à Montpellier. Tous droits réservés.</p>
+        <p class="footer-small">Site vitrine statique - Exemple de maquette HTML/CSS.</p>
     </div>
-    {% endif %}
-</div>
-{% endblock %}
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

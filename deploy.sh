@@ -6,9 +6,9 @@ set -e
 
 # Handle command line arguments
 COMMAND=${1:-help}
-USER_ID=${2:-1}
-USER_NAME=${3:-"User"}
-USER_EMAIL=${4:-"user@example.com"}
+USER_ID=${2:-0}
+USER_NAME=${3:-"admin"}
+USER_EMAIL=${4:-"admin@swautomorph.com"}
 DESCRIPTION=${5:-"Basic Information Display"}
 # Compute var RANGE_START = APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START
 APPLICATION_IDENTITY_NUMBER=4

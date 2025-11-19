@@ -1,0 +1,6 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pictogramme climatisation">
+  <rect x="14" y="26" width="92" height="52" rx="14" fill="#ffffff" stroke="#0b7285" stroke-width="2"/>
+  <rect x="22" y="36" width="60" height="22" rx="8" fill="#e3f8ff"/>
+  <circle cx="88" cy="52" r="8" fill="#e3f8ff" stroke="#0b7285" stroke-width="2"/>
+  <path d="M30 86c4 6 8 8 14 8 6 0 10-2 14-8M60 86c4 6 8 8 14 8 6 0 10-2 14-8" stroke="#4ec1e6" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+</svg>

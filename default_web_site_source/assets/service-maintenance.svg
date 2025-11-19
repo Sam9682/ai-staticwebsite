@@ -1,0 +1,5 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pictogramme maintenance">
+  <circle cx="60" cy="60" r="40" fill="#e3f8ff" stroke="#0b7285" stroke-width="2"/>
+  <path d="M60 36v22l12 10" stroke="#0b7285" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M44 32l-8-8M76 32l8-8M44 88l-8 8M76 88l8 8" stroke="#4ec1e6" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pictogramme froid commercial">
+  <rect x="12" y="18" width="96" height="84" rx="16" fill="#e3f8ff" stroke="#0b7285" stroke-width="2"/>
+  <path d="M60 32v56M36 60h48" stroke="#0b7285" stroke-width="3" stroke-linecap="round"/>
+  <path d="M60 32l-8 8M60 32l8 8M60 88l-8-8M60 88l8-8M36 60l8-8M36 60l8 8M84 60l-8-8M84 60l-8 8" stroke="#0b7285" stroke-width="2" stroke-linecap="round"/>
+</svg>

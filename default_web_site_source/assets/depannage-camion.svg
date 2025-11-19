@@ -1,0 +1,14 @@
+<svg width="360" height="260" viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Camion de dépannage frigoriste">
+  <rect width="360" height="260" rx="24" fill="#ffffff"/>
+  <rect x="14" y="180" width="332" height="6" rx="3" fill="#d8e2ec"/>
+  <rect x="46" y="110" width="210" height="70" rx="12" fill="#0b7285"/>
+  <rect x="180" y="86" width="76" height="60" rx="10" fill="#e3f8ff" stroke="#0b7285" stroke-width="2"/>
+  <circle cx="88" cy="190" r="18" fill="#243b53"/>
+  <circle cx="88" cy="190" r="9" fill="#9fb3c8"/>
+  <circle cx="220" cy="190" r="18" fill="#243b53"/>
+  <circle cx="220" cy="190" r="9" fill="#9fb3c8"/>
+  <path d="M50 126h70v8H50zM50 144h90v8H50z" fill="#e3f8ff"/>
+  <path d="M218 104l12 12 18-22" stroke="#0b7285" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M280 148h22l10 14v18h-32z" fill="#4ec1e6"/>
+  <circle cx="292" cy="124" r="10" fill="#0b7285"/>
+</svg>
