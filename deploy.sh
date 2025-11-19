@@ -165,4 +165,4 @@ fi
 
 echo ""
 echo "🎉 Deployment completed successfully!"
-echo "🔗 Access your site at: http://localhost:${PORT}"
+echo "🔗 Access your site at: https://www.swautomorph.com:${PORT + 1}"

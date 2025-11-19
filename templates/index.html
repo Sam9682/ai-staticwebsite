@@ -34,5 +34,29 @@
         <h3>API Endpoint</h3>
         <p>Get user information via API: <a href="/api/info" target="_blank">/api/info</a></p>
     </div>
+    
+    {% if show_admin %}
+    <div class="admin-panel">
+        <h2>Website Administration</h2>
+        <p>Upload new website version</p>
+        
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Drag & drop your ZIP file here or click to browse</p>
+                    <input type="file" id="website" name="website" accept=".zip" required>
+                    <button type="button" id="browseBtn" class="browse-btn">Browse Files</button>
+                </div>
+            </div>
+            <div class="selected-file" id="selectedFile" style="display: none;">
+                <span id="fileName"></span>
+                <button type="button" id="uploadBtn" class="upload-btn">Upload Website</button>
+                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+            </div>
+            <div id="uploadStatus"></div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

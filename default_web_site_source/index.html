@@ -1,21 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Default Website</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        p { color: #666; line-height: 1.6; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Your Website</h1>
-        <p>This is the default website. Upload a new version to replace this content.</p>
-        <p>Current version: Default</p>
+{% extends "base.html" %}
+
+{% block title %}User Information - AI-StaticWebsite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="info-card">
+        <h2>User Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>User ID:</label>
+                <span>{{ user.id }}</span>
+            </div>
+            <div class="info-item">
+                <label>Name:</label>
+                <span>{{ user.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Email:</label>
+                <span>{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <label>Description:</label>
+                <span>{{ user.description }}</span>
+            </div>
+            <div class="info-item">
+                <label>Port:</label>
+                <span>{{ user.port }}</span>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+    
+    <div class="api-info">
+        <h3>API Endpoint</h3>
+        <p>Get user information via API: <a href="/api/info" target="_blank">/api/info</a></p>
+    </div>
+    
+    {% if show_admin %}
+    <div class="admin-panel">
+        <h2>Website Administration</h2>
+        <p>Upload new website version</p>
+        
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Drag & drop your ZIP file here or click to browse</p>
+                    <input type="file" id="website" name="website" accept=".zip" required>
+                    <button type="button" id="browseBtn" class="browse-btn">Browse Files</button>
+                </div>
+            </div>
+            <div class="selected-file" id="selectedFile" style="display: none;">
+                <span id="fileName"></span>
+                <button type="button" id="uploadBtn" class="upload-btn">Upload Website</button>
+                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+            </div>
+            <div id="uploadStatus"></div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

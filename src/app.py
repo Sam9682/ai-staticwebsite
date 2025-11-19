@@ -14,6 +14,10 @@ def create_app():
     @app.route('/')
     def index():
         """Main page displaying user information"""
+        from flask import request
+        user_id_param = request.args.get('user_id')
+        show_admin = user_id_param is not None
+        
         user_info = {
             'id': USER_ID,
             'name': USER_NAME,
@@ -21,7 +25,7 @@ def create_app():
             'description': DESCRIPTION,
             'port': PORT
         }
-        return render_template('index.html', user=user_info)
+        return render_template('index.html', user=user_info, show_admin=show_admin)
     
     @app.route('/health')
     def health():
