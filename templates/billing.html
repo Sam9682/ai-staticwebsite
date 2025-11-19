@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Billing & Usage - AI-StaticWebsite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="billing-header">
+        <h2>Billing & Usage Report</h2>
+        <p>User ID: {{ user_id }}</p>
+    </div>
+    
+    <div class="usage-summary">
+        <h3>30-Day Summary</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <label>Total Visits:</label>
+                <span>{{ usage.summary.total_visits }}</span>
+            </div>
+            <div class="summary-item">
+                <label>Total Duration:</label>
+                <span>{{ "%.2f"|format(usage.summary.total_duration) }} seconds</span>
+            </div>
+            <div class="summary-item">
+                <label>Total Cost:</label>
+                <span>${{ "%.4f"|format(usage.summary.total_cost) }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="daily-usage">
+        <h3>Daily Usage</h3>
+        <div class="usage-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Visits</th>
+                        <th>Duration (sec)</th>
+                        <th>Cost ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in usage.daily %}
+                    <tr>
+                        <td>{{ day[3] }}</td>
+                        <td>{{ day[0] }}</td>
+                        <td>{{ "%.2f"|format(day[1]) }}</td>
+                        <td>${{ "%.4f"|format(day[2]) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="billing-info">
+        <h3>Billing Information</h3>
+        <p>Base rate: $0.001 per second of page viewing time</p>
+        <p>Billing is calculated based on actual time spent viewing pages</p>
+    </div>
+</div>
+{% endblock %}

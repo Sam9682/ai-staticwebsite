@@ -1,15 +1,38 @@
 """Main Flask application"""
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 from flask_cors import CORS
 from .config import SECRET_KEY, USER_ID, USER_NAME, USER_EMAIL, DESCRIPTION, PORT
+from .database import init_db, log_page_visit, end_page_visit, get_user_usage
+import uuid
+import time
 
 def create_app():
     """Application factory"""
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
     app.secret_key = SECRET_KEY
     
+    # Initialize database
+    init_db()
+    
     # Configure CORS
     CORS(app, supports_credentials=True)
+    
+    @app.before_request
+    def before_request():
+        """Track page visits for billing"""
+        if 'session_id' not in session:
+            session['session_id'] = str(uuid.uuid4())
+        
+        if request.endpoint and not request.path.startswith('/static'):
+            session['visit_id'] = log_page_visit(USER_ID, session['session_id'], request.path)
+            session['visit_start'] = time.time()
+    
+    @app.after_request
+    def after_request(response):
+        """End page visit tracking"""
+        if 'visit_id' in session:
+            end_page_visit(session['visit_id'])
+        return response
     
     @app.route('/')
     def index():
@@ -86,5 +109,19 @@ def create_app():
         os.remove(zip_path)
         
         return jsonify({'success': True, 'version': timestamp})
+    
+    @app.route('/billing')
+    def billing():
+        """Billing and usage page"""
+        user_id_param = request.args.get('user_id', USER_ID)
+        usage_data = get_user_usage(user_id_param)
+        return render_template('billing.html', usage=usage_data, user_id=user_id_param)
+    
+    @app.route('/api/usage/<user_id>')
+    def api_usage(user_id):
+        """API endpoint for usage data"""
+        days = request.args.get('days', 30, type=int)
+        usage_data = get_user_usage(user_id, days)
+        return jsonify(usage_data)
     
     return app
