@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI-StaticWebsite{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">AI-StaticWebsite</h1>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% if show_admin %}
+    <script>
+    const fileInput = document.getElementById('website');
+    const uploadArea = document.getElementById('uploadArea');
+    const selectedFile = document.getElementById('selectedFile');
+    const fileName = document.getElementById('fileName');
+    const browseBtn = document.getElementById('browseBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const statusDiv = document.getElementById('uploadStatus');
+    
+    if (browseBtn) {
+        browseBtn.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.zip')) {
+                fileInput.files = files;
+                showSelectedFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showSelectedFile(e.target.files[0]);
+            }
+        });
+        
+        function showSelectedFile(file) {
+            fileName.textContent = file.name;
+            uploadArea.style.display = 'none';
+            selectedFile.style.display = 'block';
+        }
+        
+        cancelBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            uploadArea.style.display = 'block';
+            selectedFile.style.display = 'none';
+            statusDiv.innerHTML = '';
+        });
+        
+        uploadBtn.addEventListener('click', async () => {
+            if (!fileInput.files[0]) return;
+            
+            const formData = new FormData();
+            formData.append('website', fileInput.files[0]);
+            
+            statusDiv.innerHTML = '⏳ Uploading...';
+            uploadBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/admin/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.innerHTML = `✅ Website updated successfully! Version: ${result.version}`;
+                    fileInput.value = '';
+                    uploadArea.style.display = 'block';
+                    selectedFile.style.display = 'none';
+                } else {
+                    statusDiv.innerHTML = `❌ Error: ${result.error}`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `❌ Upload failed: ${error.message}`;
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        });
+    }
+    </script>
+    {% endif %}
+</body>
+</html>
