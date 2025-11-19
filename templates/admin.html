@@ -10,28 +10,88 @@
         
         <div class="upload-section">
             <h3>Upload New Website Version</h3>
-            <form id="uploadForm" enctype="multipart/form-data">
-                <div class="file-input">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Drag & drop your ZIP file here or click to browse</p>
                     <input type="file" id="website" name="website" accept=".zip" required>
-                    <label for="website">Choose ZIP file</label>
+                    <button type="button" id="browseBtn" class="browse-btn">Browse Files</button>
                 </div>
-                <button type="submit">Upload Website</button>
-            </form>
+            </div>
+            <div class="selected-file" id="selectedFile" style="display: none;">
+                <span id="fileName"></span>
+                <button type="button" id="uploadBtn" class="upload-btn">Upload Website</button>
+                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+            </div>
             <div id="uploadStatus"></div>
         </div>
     </div>
 </div>
 
 <script>
-document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+const fileInput = document.getElementById('website');
+const uploadArea = document.getElementById('uploadArea');
+const selectedFile = document.getElementById('selectedFile');
+const fileName = document.getElementById('fileName');
+const browseBtn = document.getElementById('browseBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const statusDiv = document.getElementById('uploadStatus');
+
+// Browse button click
+browseBtn.addEventListener('click', () => fileInput.click());
+
+// Drag and drop events
+uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
+    uploadArea.classList.add('drag-over');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('drag-over');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].name.endsWith('.zip')) {
+        fileInput.files = files;
+        showSelectedFile(files[0]);
+    }
+});
+
+// File input change
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        showSelectedFile(e.target.files[0]);
+    }
+});
+
+// Show selected file
+function showSelectedFile(file) {
+    fileName.textContent = file.name;
+    uploadArea.style.display = 'none';
+    selectedFile.style.display = 'block';
+}
+
+// Cancel selection
+cancelBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    uploadArea.style.display = 'block';
+    selectedFile.style.display = 'none';
+    statusDiv.innerHTML = '';
+});
+
+// Upload file
+uploadBtn.addEventListener('click', async () => {
+    if (!fileInput.files[0]) return;
     
     const formData = new FormData();
-    const fileInput = document.getElementById('website');
     formData.append('website', fileInput.files[0]);
     
-    const statusDiv = document.getElementById('uploadStatus');
-    statusDiv.innerHTML = 'Uploading...';
+    statusDiv.innerHTML = '⏳ Uploading...';
+    uploadBtn.disabled = true;
     
     try {
         const response = await fetch('/admin/upload', {
@@ -44,11 +104,15 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
         if (result.success) {
             statusDiv.innerHTML = `✅ Website updated successfully! Version: ${result.version}`;
             fileInput.value = '';
+            uploadArea.style.display = 'block';
+            selectedFile.style.display = 'none';
         } else {
             statusDiv.innerHTML = `❌ Error: ${result.error}`;
         }
     } catch (error) {
         statusDiv.innerHTML = `❌ Upload failed: ${error.message}`;
+    } finally {
+        uploadBtn.disabled = false;
     }
 });
 </script>
