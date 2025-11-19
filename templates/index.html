@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}User Information - AI-StaticWebsite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="info-card">
+        <h2>User Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>User ID:</label>
+                <span>{{ user.id }}</span>
+            </div>
+            <div class="info-item">
+                <label>Name:</label>
+                <span>{{ user.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Email:</label>
+                <span>{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <label>Description:</label>
+                <span>{{ user.description }}</span>
+            </div>
+            <div class="info-item">
+                <label>Port:</label>
+                <span>{{ user.port }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="api-info">
+        <h3>API Endpoint</h3>
+        <p>Get user information via API: <a href="/api/info" target="_blank">/api/info</a></p>
+    </div>
+</div>
+{% endblock %}
