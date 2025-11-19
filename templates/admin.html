@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - AI-StaticWebsite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-panel">
+        <h2>Website Administration</h2>
+        <p>Welcome, {{ user.name }}!</p>
+        
+        <div class="upload-section">
+            <h3>Upload New Website Version</h3>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="file-input">
+                    <input type="file" id="website" name="website" accept=".zip" required>
+                    <label for="website">Choose ZIP file</label>
+                </div>
+                <button type="submit">Upload Website</button>
+            </form>
+            <div id="uploadStatus"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const fileInput = document.getElementById('website');
+    formData.append('website', fileInput.files[0]);
+    
+    const statusDiv = document.getElementById('uploadStatus');
+    statusDiv.innerHTML = 'Uploading...';
+    
+    try {
+        const response = await fetch('/admin/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            statusDiv.innerHTML = `✅ Website updated successfully! Version: ${result.version}`;
+            fileInput.value = '';
+        } else {
+            statusDiv.innerHTML = `❌ Error: ${result.error}`;
+        }
+    } catch (error) {
+        statusDiv.innerHTML = `❌ Upload failed: ${error.message}`;
+    }
+});
+</script>
+{% endblock %}

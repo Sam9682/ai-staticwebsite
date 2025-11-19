@@ -25,5 +25,9 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV SECRET_KEY=change-this-in-production
 
+# Copy initialization script
+COPY init_website.sh /app/
+RUN chmod +x /app/init_website.sh
+
 # Start application
-CMD ["python3", "app.py"]
+CMD ["/bin/bash", "-c", "/app/init_website.sh && python3 app.py"]

@@ -1,5 +1,5 @@
 """Main Flask application"""
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from .config import SECRET_KEY, USER_ID, USER_NAME, USER_EMAIL, DESCRIPTION, PORT
 
@@ -38,5 +38,49 @@ def create_app():
             'description': DESCRIPTION,
             'port': PORT
         })
+    
+    @app.route('/admin')
+    def admin():
+        """Admin panel for website management"""
+        return render_template('admin.html', user={'name': USER_NAME})
+    
+    @app.route('/admin/upload', methods=['POST'])
+    def upload_website():
+        """Handle website zip upload"""
+        import os
+        import zipfile
+        from datetime import datetime
+        from flask import request, flash, redirect, url_for
+        
+        if 'website' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['website']
+        if file.filename == '' or not file.filename.endswith('.zip'):
+            return jsonify({'error': 'Please upload a zip file'}), 400
+        
+        # Create timestamped directory
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        website_dir = f'/var/www/web_site_source_{timestamp}'
+        os.makedirs(website_dir, exist_ok=True)
+        
+        # Extract zip file
+        zip_path = f'/tmp/website_{timestamp}.zip'
+        file.save(zip_path)
+        
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(website_dir)
+        
+        # Update symlink to point to new version
+        html_link = '/var/www/html'
+        if os.path.islink(html_link):
+            os.unlink(html_link)
+        elif os.path.exists(html_link):
+            os.rename(html_link, f'/var/www/html_backup_{timestamp}')
+        
+        os.symlink(website_dir, html_link)
+        os.remove(zip_path)
+        
+        return jsonify({'success': True, 'version': timestamp})
     
     return app
