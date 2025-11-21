@@ -1,23 +1,29 @@
 #!/bin/bash
-
-# AI-StaticWebsite Deployment Script
-# Organized with functions for better maintainability
+# ${NAME_OF_APPLICATION} Production Deployment Script
 
 set -e
 
 # Global Variables
+NAME_OF_APPLICATION="AI-STATICWEBSITE"
+APPLICATION_IDENTITY_NUMBER=4
+RANGE_START=6000
+RANGE_RESERVED=10
+
+# Global Parameters
 COMMAND=${1:-help}
 USER_ID=${2:-0}
 USER_NAME=${3:-"user"}
 USER_EMAIL=${4:-"user@swautomorph.com"}
 DESCRIPTION=${5:-"Basic Information Display"}
-APPLICATION_IDENTITY_NUMBER=4
-RANGE_START=6000
-RANGE_RESERVED=10
-PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
+
+# Configuration
+DOMAIN=${DOMAIN:-"www.swautomorph.com"}
+EMAIL=${EMAIL:-"user@swautomorph.com"}
+ENV_FILE=".env.prod"
 
 # Calculate ports (convert alphanumeric USER_ID to numeric for port calculation)
 calculate_ports() {
+    PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
     HTTPS_PORT=$((PORT + 1))
 }
@@ -35,200 +41,300 @@ show_environment() {
     echo ""
 }
 
-# Check service status
-check_status() {
-    show_environment "ps"
-    echo "📊 AI-StaticWebsite Service Status:"
+echo "🚀 ${NAME_OF_APPLICATION} Production Deployment"
+echo "=================================="
+
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Helper functions
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if running as root
+if [[ $EUID -eq 0 ]]; then
+   log_error "This script should not be run as root"
+   exit 1
+fi
+
+# Check prerequisites
+check_prerequisites() {
+    log_info "Checking prerequisites..."
     
-    if command -v docker-compose &> /dev/null; then
-        PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose ps
-    else
-        echo "❌ Docker Compose not installed"
-    fi
-}
-
-# Stop services
-stop_services() {
-    show_environment "stop"
-    echo "🛑 Stopping AI-StaticWebsite services..."
-    
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose down
-    echo "✅ Services stopped"
-}
-
-# Show logs
-show_logs() {
-    show_environment "logs"
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose logs -f
-}
-
-# Restart services
-restart_services() {
-    show_environment "restart"
-    echo "🔄 Restarting AI-StaticWebsite services..."
-    
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose restart
-    echo "✅ Services restarted"
-}
-
-# Start services
-start_services() {
-    show_environment "start"
-    echo "🚀 Starting AI-StaticWebsite deployment..."
-    
-    setup_environment
-    cleanup_docker
-    build_and_start_services
-    verify_deployment
-}
-
-# Validate user input
-validate_user_id() {
-    if ! [[ "$USER_ID" =~ ^[a-zA-Z0-9]+$ ]]; then
-        echo "❌ Error: user_id must be alphanumeric"
-        exit 1
-    fi
-}
-
-# Check system requirements
-check_requirements() {
     if ! command -v docker &> /dev/null; then
-        echo "❌ Docker is not installed. Please install Docker first."
+        log_error "Docker is not installed. Please install Docker first."
         exit 1
     fi
     
     if ! command -v docker-compose &> /dev/null; then
-        echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+        log_error "Docker Compose is not installed. Please install Docker Compose first."
         exit 1
     fi
+    
+    log_info "Prerequisites check passed ✅"
 }
 
-# Setup directories and certificates
-setup_environment() {
-    create_directories
-    setup_ssl_certificates
-    generate_environment_file
-}
+# Generate secure passwords
+generate_secrets() {
+    log_info "Generating secure secrets..."
+    
+    if [[ ! -f "$ENV_FILE" ]]; then
+        log_info "Creating production environment file..."
+        
+        # Generate secure passwords
+        DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
+        JWT_SECRET=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
+        
+        cat > "$ENV_FILE" << EOF
+# Database Configuration (SQLite)
+DATABASE_URL=sqlite:///./data/ai_haccp.db
 
-create_directories() {
-    echo "📁 Creating directories..."
-    mkdir -p data ssl logs
-    chmod 755 data ssl logs
-}
+# Security
+JWT_SECRET=$JWT_SECRET
 
-setup_ssl_certificates() {
-    if [ ! -f ssl/cert.pem ] || [ ! -f ssl/key.pem ]; then
-        echo "🔐 Generating SSL certificates..."
-        ./generate_ssl.sh
-    else
-        echo "✅ SSL certificates already exist"
-    fi
-}
+# Domain Configuration
+DOMAIN=$DOMAIN
+API_URL=https://$DOMAIN
+SSL_EMAIL=$EMAIL
 
-generate_environment_file() {
-    echo "🔑 Generating environment configuration..."
-    SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-    cat > .env << EOF
-SECRET_KEY=${SECRET_KEY}
-FLASK_ENV=production
-USER_ID=${USER_ID}
-USER_NAME=${USER_NAME}
-USER_EMAIL=${USER_EMAIL}
-DESCRIPTION=${DESCRIPTION}
-PORT=${PORT}
-HTTPS_PORT=${HTTPS_PORT}
-PORT_RANGE_BEGIN=${PORT_RANGE_BEGIN}
+# Frontend
+REACT_APP_API_URL=https://$DOMAIN
 EOF
-    echo "✅ Environment file created (.env)"
-}
-
-cleanup_docker() {
-    echo "🧹 Cleaning up..."
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose down --remove-orphans 2>/dev/null || true
-}
-
-build_and_start_services() {
-    echo "🔨 Building Docker images..."
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose build --no-cache
-    
-    echo "🚀 Starting services..."
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose up -d
-    
-    echo "⏳ Waiting for services to start..."
-    sleep 10
-}
-
-verify_deployment() {
-    if PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose ps | grep -q "Up"; then
-        show_success_info
+        
+        chmod 600 "$ENV_FILE"
+        log_info "Environment file created with secure passwords ✅"
     else
-        show_failure_info
+        log_warn "Environment file already exists, skipping generation"
+    fi
+}
+
+# Setup SSL certificates
+setup_ssl() {
+    log_info "Setting up SSL certificates..."
+    
+    if [[ ! -d "ssl" ]]; then
+        mkdir -p ssl
+        
+        # Check if certbot is installed
+        if command -v certbot &> /dev/null; then
+            log_info "Obtaining SSL certificate for $DOMAIN..."
+            
+            # Stop nginx if running
+            sudo systemctl stop nginx 2>/dev/null || true
+            
+            # Get certificate
+            sudo certbot certonly --standalone \
+                -d "$DOMAIN" \
+                --email "$EMAIL" \
+                --agree-tos \
+                --non-interactive \
+                --quiet
+            
+            # Copy certificates
+            sudo cp "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ssl/
+            sudo cp "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ssl/
+            sudo chown -R $USER:$USER ssl/
+            
+            log_info "SSL certificates obtained ✅"
+        else
+            log_warn "Certbot not found. Creating self-signed certificates for testing..."
+            
+            # Create self-signed certificate for testing
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout ssl/privkey.pem \
+                -out ssl/fullchain.pem \
+                -subj "/C=US/ST=State/L=City/O=Organization/CN=$DOMAIN"
+            
+            log_warn "Self-signed certificate created. Replace with real certificate for production!"
+        fi
+    else
+        log_info "SSL directory already exists, skipping certificate generation"
+    fi
+}
+
+# Build and deploy
+deploy_services() {
+    log_info "Building and deploying services..."
+
+    # Stop existing services
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
+    
+    # Build images
+    log_info "Building Docker images..."
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml build --no-cache --build-arg PIP_UPGRADE=1
+    
+    # Start services
+    log_info "Starting production services..."
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml --env-file "$ENV_FILE" up -d
+    
+    # Wait for services to be ready
+    log_info "Waiting for services to start..."
+    sleep 30
+    
+    # Check service health
+    if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+        log_info "Services deployed successfully ✅"
+    else
+        log_error "Some services failed to start"
+        docker-compose -f docker-compose.prod.yml logs
         exit 1
     fi
 }
 
-show_success_info() {
-    echo "✅ Services are running!"
-    echo ""
-    echo "🌐 Application URLs:"
-    echo "   Web Interface: http://localhost:${PORT}"
-    echo "   HTTPS:         https://localhost:${HTTPS_PORT}"
-    echo ""
-    echo "👤 User Information:"
-    echo "   User ID:         ${USER_ID}"
-    echo "   Name:            ${USER_NAME}"
-    echo "   Email:           ${USER_EMAIL}"
-    echo "   Description:     ${DESCRIPTION}"
-    echo "   Port Range Begin: ${PORT_RANGE_BEGIN}"
-    echo "   Assigned Port:   ${PORT}"
-    echo ""
-    echo "📋 Management Commands:"
-    echo "   View logs:     ./deploy.sh logs ${USER_ID}"
-    echo "   Stop services: ./deploy.sh stop ${USER_ID}"
-    echo "   Restart:       ./deploy.sh restart ${USER_ID}"
-    echo "   Check status:  ./deploy.sh ps ${USER_ID}"
-    echo ""
-    echo "📊 Service Status:"
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose ps
+# Verify deployment
+verify_deployment() {
+    log_info "Verifying deployment..."
+    
+    # Check if services are running
+    if ! docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+        log_error "Services are not running properly"
+        return 1
+    fi
+    
+    # Test API health endpoint
+    sleep 10
+    if curl -f -s "http://www.swautomorph.com:${PORT}/health" > /dev/null; then
+        log_info "API health check passed ✅"
+    else
+        log_warn "API health check failed, but services are running"
+    fi
+    
+    log_info "Deployment verification completed"
 }
 
-show_failure_info() {
-    echo "❌ Failed to start services. Check logs:"
-    PORT=$PORT HTTPS_PORT=$HTTPS_PORT USER_ID=$USER_ID docker-compose logs
+# Setup firewall
+setup_firewall() {
+    log_info "Configuring firewall..."
+    
+    if command -v ufw &> /dev/null; then
+        # Configure UFW if available
+        sudo ufw --force reset
+        sudo ufw default deny incoming
+        sudo ufw default allow outgoing
+        sudo ufw allow ssh
+        sudo ufw allow ${PORT}/tcp
+        sudo ufw allow ${HTTPS_PORT}/tcp
+        sudo ufw --force enable
+        
+        log_info "Firewall configured ✅"
+    else
+        log_warn "UFW not found, skipping firewall configuration"
+    fi
 }
 
-# Show usage information
-show_usage() {
-    echo "Usage: $0 [start|stop|restart|ps|logs] <user_id> [user_name] [user_email] [description]"
-    echo "  start        - Start services with user parameters (default)"
-    echo "  stop         - Stop all services"
-    echo "  restart      - Restart all services"
-    echo "  ps           - Show service status"
-    echo "  logs         - Show service logs"
-    echo ""
-    echo "Parameters:"
-    echo "  user_id          - User ID (required, alphanumeric)"
-    echo "  user_name        - User display name (optional, default: 'admin')"
-    echo "  user_email       - User email (optional, default: 'admin@swautomorph.com')"
-    echo "  description      - Site description (optional, default: 'Basic Information Display')"
-    echo ""
-    echo "Example: $0 start user123 'John Doe' 'john@example.com' 'My Personal Site'"
+# Create backup script
+create_backup_script() {
+    log_info "Creating backup script..."
+    
+    cat > backup.sh << 'EOF'
+#!/bin/bash
+# ${NAME_OF_APPLICATION} Backup Script
+
+BACKUP_DIR="backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="$BACKUP_DIR/ai_haccp_backup_$DATE"
+
+mkdir -p "$BACKUP_DIR"
+
+echo "Creating backup: $BACKUP_FILE"
+PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml exec -T api cp /app/data/ai_haccp.db /tmp/backup.db
+docker cp $(docker-compose -f docker-compose.prod.yml ps -q api):/tmp/backup.db "$BACKUP_FILE.db"
+
+if [[ $? -eq 0 ]]; then
+    echo "Backup created successfully: $BACKUP_FILE"
+    
+    # Keep only last 7 backups
+    ls -t "$BACKUP_DIR"/ai_haccp_backup_*.db | tail -n +8 | xargs -r rm
+    echo "Old backups cleaned up"
+else
+    echo "Backup failed!"
+    exit 1
+fi
+EOF
+    
+    chmod +x backup.sh
+    log_info "Backup script created ✅"
 }
 
-# START Command
+# Main deployment process
 start() {
-    validate_user_id
-    check_requirements
-    start_services
+    log_info "Starting ${NAME_OF_APPLICATION} production deployment..."
+    
+    check_prerequisites
+    generate_secrets
+    setup_ssl
+    deploy_services
+    verify_deployment
+    setup_firewall
+    create_backup_script
+    
     echo ""
     echo "🎉 Deployment completed successfully!"
-    echo "🔗 Access your site at: https://www.swautomorph.com:${HTTPS_PORT}"
+    echo "=================================="
+    echo "🌐 Web Interface: https://$DOMAIN"
+    echo "📚 API Documentation: https://$DOMAIN/docs"
+    echo "🔑 Demo Login: admin@ai-automorph.com / password"
+    echo ""
+    echo "📋 Next Steps:"
+    echo "1. Test the application at https://$DOMAIN"
+    echo "2. Change default demo password"
+    echo "3. Configure DNS to point to this server"
+    echo "4. Set up automated backups: ./backup.sh"
+    echo "5. Monitor logs: docker-compose -f docker-compose.prod.yml logs -f"
+    echo ""
+    echo "🔧 Management Commands:"
+    echo "- View logs: make logs"
+    echo "- Backup database: ./backup.sh"
+    echo "- Stop services: make stop"
+    echo "- Update application: git pull && make prod"
+}
+
+# Stop services
+stop_services() {
+    log_info "Stopping ${NAME_OF_APPLICATION} services..."
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml down
+    log_info "Services stopped successfully ✅"
+}
+
+# Restart services
+restart_services() {
+    log_info "Restarting ${NAME_OF_APPLICATION} services..."
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml restart
+    log_info "Services restarted successfully ✅"
+}
+
+# Check service status
+check_status() {
+    log_info "Checking ${NAME_OF_APPLICATION} service status..."
+    echo ""
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml ps
+    echo ""
+    
+    if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+        log_info "${NAME_OF_APPLICATION} is running ✅"
+    else
+        log_warn "${NAME_OF_APPLICATION} is not running ⚠️"
+    fi
 }
 
 # Main function - orchestrates the deployment process
 main() {
     calculate_ports
-    
+    show_environment "${NAME_OF_APPLICATION}"
+
     case $COMMAND in
         "ps")
             check_status
