@@ -8,8 +8,8 @@ set -e
 # Global Variables
 COMMAND=${1:-help}
 USER_ID=${2:-0}
-USER_NAME=${3:-"admin"}
-USER_EMAIL=${4:-"admin@swautomorph.com"}
+USER_NAME=${3:-"user"}
+USER_EMAIL=${4:-"user@swautomorph.com"}
 DESCRIPTION=${5:-"Basic Information Display"}
 APPLICATION_IDENTITY_NUMBER=4
 RANGE_START=6000
