@@ -18,9 +18,7 @@ PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
 
 # Calculate ports (convert alphanumeric USER_ID to numeric for port calculation)
 calculate_ports() {
-    USER_ID_NUMERIC=$(echo -n "$USER_ID" | cksum | cut -d' ' -f1)
-    USER_ID_NUMERIC=$((USER_ID_NUMERIC % 1000))
-    PORT=$((PORT_RANGE_BEGIN + USER_ID_NUMERIC * RANGE_RESERVED))
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
     HTTPS_PORT=$((PORT + 1))
 }
 
