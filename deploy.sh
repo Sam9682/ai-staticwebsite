@@ -215,6 +215,16 @@ show_usage() {
     echo "Example: $0 start user123 'John Doe' 'john@example.com' 'My Personal Site'"
 }
 
+# START Command
+start() {
+    validate_user_id
+    check_requirements
+    start_services
+    echo ""
+    echo "🎉 Deployment completed successfully!"
+    echo "🔗 Access your site at: https://www.swautomorph.com:${HTTPS_PORT}"
+}
+
 # Main function - orchestrates the deployment process
 main() {
     calculate_ports
@@ -237,12 +247,8 @@ main() {
             exit 0
             ;;
         "start")
-            validate_user_id
-            check_requirements
-            start_services
-            echo ""
-            echo "🎉 Deployment completed successfully!"
-            echo "🔗 Access your site at: https://www.swautomorph.com:${HTTPS_PORT}"
+            start
+            exit 0
             ;;
         *)
             show_usage
