@@ -303,6 +303,37 @@ body {
     color: #666;
 }
 
+.instructions {
+    margin-bottom: 2rem;
+}
+
+.instruction-box {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.prompt-example {
+    background: #f5f5f5;
+    border-left: 4px solid #2196f3;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-family: monospace;
+    font-size: 0.9rem;
+    overflow-x: auto;
+}
+
+.warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #856404;
+}
+
 @media (max-width: 768px) {
     .main-content {
         padding: 1rem;

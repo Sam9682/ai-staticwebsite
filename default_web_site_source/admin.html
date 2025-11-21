@@ -8,6 +8,21 @@
         <h2>Website Administration</h2>
         <p>Welcome, {{ user.name }}!</p>
         
+        <div class="instructions">
+            <h3>How to Generate Your Website</h3>
+            <div class="instruction-box">
+                <p><strong>Step 1:</strong> Ask ChatGPT to generate your website using this prompt:</p>
+                <div class="prompt-example">
+                    <code>"peux tu generer le code source d'un site web static pour une entreprise de frigoriste appellee "MON FRIGO" sur montpellier, 2 rue des esteves 34000 MONTPELLIER, tel 0543454321. Le fichier doit contenir des images. generer un fichier zip avec tous les fichier"</code>
+                </div>
+                <p><strong>Step 2:</strong> Download the ZIP file from ChatGPT</p>
+                <p><strong>Step 3:</strong> Upload it below</p>
+                <div class="warning">
+                    <strong>⚠️ Important:</strong> All files must be in the root of the ZIP file (not in subfolders). The index.html file should be directly accessible at the root level.
+                </div>
+            </div>
+        </div>
+        
         <div class="upload-section">
             <h3>Upload New Website Version</h3>
             <div class="upload-area" id="uploadArea">
