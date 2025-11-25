@@ -4,7 +4,7 @@
 set -e
 
 # Load configuration
-source deploy.ini
+source ./conf/deploy.ini
 
 # Global Parameters
 COMMAND=${1:-help}
@@ -232,7 +232,7 @@ setup_firewall() {
 create_backup_script() {
     log_info "Creating backup script..."
     
-    cat > backup.sh << 'EOF'
+    cat > ./scripts/backup.sh << 'EOF'
 #!/bin/bash
 # ${NAME_OF_APPLICATION} Backup Script
 
@@ -258,7 +258,7 @@ else
 fi
 EOF
     
-    chmod +x backup.sh
+    chmod +x ./scripts/backup.sh
     log_info "Backup script created ✅"
 }
 
@@ -285,12 +285,12 @@ start() {
     echo "1. Test the application at https://$DOMAIN"
     echo "2. Change default demo password"
     echo "3. Configure DNS to point to this server"
-    echo "4. Set up automated backups: ./backup.sh"
+    echo "4. Set up automated backups: ./scripts/backup.sh"
     echo "5. Monitor logs: docker-compose -f docker-compose.prod.yml logs -f"
     echo ""
     echo "🔧 Management Commands:"
     echo "- View logs: make logs"
-    echo "- Backup database: ./backup.sh"
+    echo "- Backup database: ./scripts/backup.sh"
     echo "- Stop services: make stop"
     echo "- Update application: git pull && make prod"
 }
@@ -307,6 +307,12 @@ restart_services() {
     log_info "Restarting ${NAME_OF_APPLICATION} services..."
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml restart
     log_info "Services restarted successfully ✅"
+}
+
+# Show logs
+show_logs() {
+    log_info "Showing ${NAME_OF_APPLICATION} service logs..."
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml logs -f
 }
 
 # Check service status
@@ -343,52 +349,6 @@ check_status() {
             "docker_compose_ps": $docker_status,
             "git_remote": $git_remotes
           }'
-}
-
-# Show usage information
-show_usage() {
-    echo "${NAME_OF_APPLICATION} Deployment Script"
-    echo "Usage: $0 [COMMAND] [USER_ID] [USER_NAME] [USER_EMAIL] [DESCRIPTION]"
-    echo ""
-    echo "COMMANDS:"
-    echo "  start     - Deploy the application in production mode"
-    echo "              • Checks prerequisites (Docker, Docker Compose)"
-    echo "              • Generates secure environment variables and secrets"
-    echo "              • Sets up SSL certificates (Let's Encrypt or self-signed)"
-    echo "              • Builds and starts Docker containers"
-    echo "              • Configures firewall rules"
-    echo "              • Creates backup script"
-    echo "              • Verifies deployment health"
-    echo ""
-    echo "  stop      - Stop all running services"
-    echo "              • Gracefully shuts down Docker containers"
-    echo "              • Preserves data and configuration"
-    echo ""
-    echo "  restart   - Restart all services without rebuilding"
-    echo "              • Restarts existing containers"
-    echo "              • Faster than full deployment"
-    echo "              • Useful for configuration changes"
-    echo ""
-    echo "  ps        - Check service status and show configuration"
-    echo "              • Returns JSON with environment variables"
-    echo "              • Shows Docker container status"
-    echo "              • Displays git remote information"
-    echo ""
-    echo "  logs      - Show service logs (requires show_logs function)"
-    echo "              • Displays real-time application logs"
-    echo "              • Useful for debugging and monitoring"
-    echo ""
-    echo "PARAMETERS:"
-    echo "  USER_ID      - Numeric identifier for port calculation (default: 0)"
-    echo "  USER_NAME    - User name for configuration (default: 'user')"
-    echo "  USER_EMAIL   - Email for SSL certificates (default: 'user@swautomorph.com')"
-    echo "  DESCRIPTION  - Optional description (default: 'Basic Information Display')"
-    echo ""
-    echo "EXAMPLES:"
-    echo "  $0 start 1 john john@example.com 'Production deployment'"
-    echo "  $0 stop"
-    echo "  $0 ps"
-    echo "  $0 restart 1 john john@example.com"
 }
 
 # Main function - orchestrates the deployment process

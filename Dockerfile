@@ -29,7 +29,7 @@ ENV FLASK_ENV=production
 ENV SECRET_KEY=change-this-in-production
 
 # Copy initialization script
-COPY init_website.sh /app/
+COPY ./scripts/init_website.sh /app/
 RUN chmod +x /app/init_website.sh
 
 # Start application
