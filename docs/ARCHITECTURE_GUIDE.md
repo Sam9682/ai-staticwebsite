@@ -55,7 +55,7 @@ services:
       - FLASK_ENV=development
 ```
 
-#### Production Environment (`docker-compose.prod.yml`)
+#### Production Environment (`docker-compose.yml`)
 ```yaml
 services:
   app:
@@ -140,7 +140,7 @@ application/
 ├── deploy.sh              # Universal deployment script
 ├── deploy.ini             # Application-specific config
 ├── docker-compose.yml     # Development environment
-├── docker-compose.prod.yml # Production environment
+├── docker-compose.yml # Production environment
 ├── Dockerfile             # Container definition
 ├── nginx.conf             # Reverse proxy config
 ├── src/                   # Application source

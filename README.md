@@ -96,7 +96,7 @@ chmod +x deploy.sh
 #### Core Files (DO NOT MODIFY)
 - `deploy.sh` - Universal deployment script
 - `docker-compose.yml` - Development environment
-- `docker-compose.prod.yml` - Production environment
+- `docker-compose.yml` - Production environment
 - `Dockerfile` - Container definition
 - `nginx.conf` - Reverse proxy configuration
 
@@ -145,7 +145,7 @@ User ID 2: Ports 6020-6029
 sudo systemctl status docker
 
 # View application logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose -f docker-compose.yml logs -f
 
 # Check port usage
 sudo netstat -tlnp | grep :6010
