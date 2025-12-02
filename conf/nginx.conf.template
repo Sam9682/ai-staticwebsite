@@ -7,15 +7,15 @@ http {
     default_type application/octet-stream;
 
     upstream app {
-        server ai-staticwebsite-app-1:5000;
+        server ai-staticwebsite-app-${USER_ID}:5000;
     }
 
     server {
         listen 443 ssl;
         server_name localhost;
 
-        ssl_certificate /etc/nginx/ssl/cert.pem;
-        ssl_certificate_key /etc/nginx/ssl/key.pem;
+        ssl_certificate /etc/nginx/ssl/STAR_swautomorph_com.crt;
+        ssl_certificate_key /etc/nginx/ssl/privateKey_STAR_swautomorph_com.key;
 
         location /static {
             proxy_pass http://app;
