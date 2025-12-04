@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  ai-staticwebsite-${USER_ID:-0}:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ai-staticwebsite-app-${USER_ID:-0}-${HTTPS_PORT:-6002}
-    ports:
+    expose:
       - "${HTTP_PORT:-6000}:5000"
     environment:
       - FLASK_ENV=production
@@ -16,8 +16,8 @@ services:
       - USER_EMAIL=${USER_EMAIL:-user@example.com}
       - DESCRIPTION=${DESCRIPTION:-Basic Information Display}
     volumes:
-      - app_data:/app/data
-      - website_data:/var/www:rw
+      - app_data_${USER_ID:-0}:/app/data
+      - website_data_${USER_ID:-0}:/var/www:rw
       - ./default_web_site_source:/app/default_web_site_source:ro
     restart: unless-stopped
     healthcheck:
@@ -36,16 +36,16 @@ services:
       - ./conf/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
       - ./default_web_site_source:/var/www/html:rw
-      - website_data:/var/www:rw
+      - website_data_${USER_ID:-0}:/var/www:rw
     depends_on:
-      - ai-staticwebsite-${USER_ID:-0}
+      - app
     restart: unless-stopped
     environment:
       - PORT=${PORT:-6001}
       - HTTPS_PORT=${HTTPS_PORT:-6002}
 
 volumes:
-  app_data:
+  app_data_${USER_ID:-0}:
     driver: local
-  website_data:
+  website_data_${USER_ID:-0}:
     driver: local
