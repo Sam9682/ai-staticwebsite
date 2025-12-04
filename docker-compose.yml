@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ai-staticwebsite-app-${USER_ID:-0}-${HTTPS_PORT:-6002}
-    expose:
+    ports:
       - "${HTTP_PORT:-6000}:5000"
     environment:
       - FLASK_ENV=production
