@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  ai-staticwebsite:
+  ai-staticwebsite-${USER_ID:-0}:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ai-staticwebsite-app-${USER_ID:-0}
+    container_name: ai-staticwebsite-app-${USER_ID:-0}-${HTTPS_PORT:-6002}
     ports:
       - "${HTTP_PORT:-6000}:5000"
     environment:
@@ -29,7 +29,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: ai-staticwebsite-nginx-${USER_ID:-0}
+    container_name: ai-staticwebsite-nginx-${USER_ID:-0}-${HTTP_PORT:-6002}
     ports:
       - "${HTTPS_PORT:-6001}:443"
     volumes:
@@ -38,7 +38,7 @@ services:
       - ./default_web_site_source:/var/www/html:rw
       - website_data:/var/www:rw
     depends_on:
-      - ai-staticwebsite
+      - ai-staticwebsite-${USER_ID:-0}
     restart: unless-stopped
     environment:
       - PORT=${PORT:-6001}
