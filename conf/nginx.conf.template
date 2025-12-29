@@ -14,8 +14,8 @@ http {
         listen 443 ssl;
         server_name localhost;
 
-        ssl_certificate /etc/nginx/ssl/STAR_swautomorph_com.crt;
-        ssl_certificate_key /etc/nginx/ssl/privateKey_STAR_swautomorph_com.key;
+        ssl_certificate /etc/nginx/ssl/fullchain.pem;
+        ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
         location /static {
             proxy_pass http://app;
