@@ -50,16 +50,12 @@ http {
         }
 
         location / {
-            # Check if user_id parameter exists, if so proxy to Flask app
-            if ($args ~ "user_id=") {
-                proxy_pass http://app;
-                break;
-            }
-            
-            # Otherwise serve static files
-            root /var/www/html;
-            index index.html;
-            try_files $uri $uri/ =404;
+            # Proxy all requests to Flask app
+            proxy_pass http://app;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
 }
