@@ -2,7 +2,16 @@
 
 # Initialize website directory structure
 mkdir -p /var/www
-cp -r /app/default_web_site_source /var/www/web_site_source_default
-ln -sf /var/www/web_site_source_default /var/www/html
 
-echo "Website initialized with default content"
+# Check if templates/index.html exists
+if [ -f "./templates/index.html" ]; then
+    # Use templates folder if index.html exists
+    echo "Found index.html in templates, using custom templates..."
+    cp -r ./templates /var/www/html
+    echo "Website initialized with custom templates"
+else
+    # Use default source if no index.html in templates
+    echo "No index.html in templates, using default source..."
+    cp -r /app/default_web_site_source/* /var/www/
+    echo "Website initialized with default content"
+fi
