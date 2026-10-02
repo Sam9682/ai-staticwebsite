@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  backend-component:
+  backen-component:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ai-staticwebsite-backend-component-${USER_ID:-0}-${HTTP_PORT:-5000}
+    container_name: ai-staticwebsite-app-${USER_ID:-0}-${HTTP_PORT:-5000}
     ports:
       - "${HTTP_PORT:-5000}:5000"
     environment:
@@ -30,7 +30,7 @@ services:
 
   frontend-component:
     image: nginx:alpine
-    container_name: ai-staticwebsite-frontend-component-${USER_ID:-0}-${HTTPS_PORT:-5001}
+    container_name: ai-staticwebsite-nginx-${USER_ID:-0}-${HTTPS_PORT:-5001}
     ports:
       - "${HTTPS_PORT:-5001}:443"
     volumes:
