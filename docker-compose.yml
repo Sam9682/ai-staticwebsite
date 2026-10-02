@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  app:
+  backend-component:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ai-staticwebsite-app-${USER_ID:-0}-${HTTP_PORT:-5000}
+    container_name: ai-staticwebsite-backend-component-${USER_ID:-0}-${HTTP_PORT:-5000}
     ports:
       - "${HTTP_PORT:-5000}:5000"
     environment:
@@ -28,9 +28,9 @@ services:
       retries: 3
       start_period: 40s
 
-  nginx:
+  frontend-component:
     image: nginx:alpine
-    container_name: ai-staticwebsite-nginx-${USER_ID:-0}-${HTTPS_PORT:-5001}
+    container_name: ai-staticwebsite-frontend-component-${USER_ID:-0}-${HTTPS_PORT:-5001}
     ports:
       - "${HTTPS_PORT:-5001}:443"
     volumes:
@@ -39,7 +39,7 @@ services:
       - ./templates:/var/www/html:rw
       - website_data:/var/www:rw
     depends_on:
-      - app
+      - backend-component
     restart: unless-stopped
     environment:
       - HTTPS_PORT=${HTTPS_PORT:-5001}
